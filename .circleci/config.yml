@@ -25,7 +25,7 @@ commands:
       - run:
           name: Destroy udapeople backend cfn stack
           command: |
-            aws cloudformation delete-stack --stack-name udapeople-backend-<< parameters.id >>
+            aws cloudformation delete-stack --stack-name udapeople-backend-<< parameters.id >> --region=us-west-1
           environment:
             TERM: xterm-256color
           when: << parameters.when >>
@@ -202,6 +202,7 @@ jobs:
               --stack-name "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}" \
               --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}" \
               --tags project=udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}
+              --region=us-west-1
       - run:
           name: Save backend URL in memstash
           command: |
@@ -220,6 +221,7 @@ jobs:
               --stack-name "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}" \
               --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}" \
               --tags project=udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}
+              --region=us-west-1
       - run:
           name: Add backend ip to ansible inventory
           working_directory: ./.circleci/ansible
