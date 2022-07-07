@@ -201,8 +201,7 @@ jobs:
               --template-file backend.yaml \
               --stack-name "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}" \
               --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}" \
-              --tags project=udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7} \
-              --region=us-west-1
+              --tags project=udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7} 
       - run:
           name: Save backend URL in memstash
           command: |
@@ -220,8 +219,7 @@ jobs:
               --template-file frontend.yaml \
               --stack-name "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}" \
               --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}" \
-              --tags project=udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7} \
-              --region=us-west-1
+              --tags project=udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7} 
       - run:
           name: Add backend ip to ansible inventory
           working_directory: ./.circleci/ansible
@@ -430,8 +428,7 @@ jobs:
               --template-file cloudfront.yaml \
               --stack-name udapeople-cloudfront-production \
               --parameter-overrides WorkflowID="${CIRCLE_WORKFLOW_ID:0:7}" \
-              --tags project=udapeople \
-              --region=us-west-1
+              --tags project=udapeople 
       - revert_migrations:
           id: ${CIRCLE_WORKFLOW_ID:0:7}
           when: on_fail
