@@ -207,10 +207,8 @@ jobs:
           command: |
             BACKEND_IP=$(aws ec2 describe-instances \
               --query 'Reservations[*].Instances[*].PublicIpAddress' \
-              --filters "Name=tag:project,Values=udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}" \
               --output text)
-
-            curl https://kvdb.io/4nRJwGPtfeUe8g4LRvwcTR/BACKEND_URL -d "http://\$BACKEND_IP:3030"
+            curl https://kvdb.io/4nRJwGPtfeUe8g4LRvwcTR/BACKEND_URL -d "http://$BACKEND_IP:3030"
       - run:
           name: Deploy frontend infrastructure
           working_directory: ./.circleci/files
@@ -226,7 +224,6 @@ jobs:
           command: |
             aws ec2 describe-instances \
               --query 'Reservations[*].Instances[*].PublicIpAddress' \
-              --filters "Name=tag:project,Values=udapeople" \
               --output text >> inventory
             cat inventory
       - persist_to_workspace:
