@@ -210,7 +210,7 @@ jobs:
               --filters "Name=tag:project,Values=udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}" \
               --output text)
 
-            curl https://kvdb.io/4nRJwGPtfeUe8g4LRvwcTR/BACKEND_URL -d 'http://$BACKEND_IP:3030'
+            curl https://kvdb.io/4nRJwGPtfeUe8g4LRvwcTR/BACKEND_URL -d "http://$BACKEND_IP:3030"
       - run:
           name: Deploy frontend infrastructure
           working_directory: ./.circleci/files
@@ -226,7 +226,7 @@ jobs:
           command: |
             aws ec2 describe-instances \
               --query 'Reservations[*].Instances[*].PublicIpAddress' \
-              --filters "Name=tag:project,Values=udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}" \
+              --filters "Name=tag:project,Values=udapeople" \
               --output text >> inventory
             cat inventory
       - persist_to_workspace:
@@ -291,10 +291,10 @@ jobs:
             if grep -q "has been executed successfully" migration_status
             then
               echo "DB migration was successful, will update memstash..."
-              curl https://kvdb.io/4nRJwGPtfeUe8g4LRvwcTR/DB_MIGRATION_${CIRCLE_WORKFLOW_ID:0:7} -d 'success' 
+              curl https://kvdb.io/4nRJwGPtfeUe8g4LRvwcTR/"DB_MIGRATION_${CIRCLE_WORKFLOW_ID:0:7}" -d 'success' 
             else
               echo "DB migration failed, please verify setup! Probably the database already exists. Verify setup!"
-              curl https://kvdb.io/4nRJwGPtfeUe8g4LRvwcTR/DB_MIGRATION_${CIRCLE_WORKFLOW_ID:0:7} -d 'failure'
+              curl https://kvdb.io/4nRJwGPtfeUe8g4LRvwcTR/"DB_MIGRATION_${CIRCLE_WORKFLOW_ID:0:7}" -d 'failure'
             fi
             echo "WorkflowID=${CIRCLE_WORKFLOW_ID:0:7}"
       - destroy_environment:
@@ -419,7 +419,7 @@ jobs:
             WorkflowID=$(aws cloudformation \
               list-exports --query "Exports[?Name==\`WorkflowID\`].Value" \
               --no-paginate --output text)
-            curl https://kvdb.io/4nRJwGPtfeUe8g4LRvwcTR/WorkflowID -d '$WorkflowID'
+            curl https://kvdb.io/4nRJwGPtfeUe8g4LRvwcTR/WorkflowID -d "$WorkflowID"
       - run:
           name: Update cloudfront distribution
           working_directory: ./.circleci/files
