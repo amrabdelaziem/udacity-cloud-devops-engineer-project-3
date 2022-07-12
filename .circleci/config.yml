@@ -282,7 +282,6 @@ jobs:
          command: |
           sudo npm install
           npm audit fix --audit-level=critical --force
-          npm run build
           sudo npm run migrations > migration.log
           cat migration.log
           migration_succesful=$(cat migration.log | grep -c "has been executed successfully")
