@@ -280,7 +280,6 @@ jobs:
           name: Run migrations
           working_directory: ./backend
           command: |
-            cd backend
             npm install
             npm audit fix
             npm run migrations > migrations_dump.txt
