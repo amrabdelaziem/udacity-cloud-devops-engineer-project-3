@@ -278,20 +278,23 @@ jobs:
             sudo ./aws/install
       - run:
           name: Run migrations
-          working_directory: ./backend
+          # working_directory: ./backend
           command: |
+            cd backend
+            npm install
             npm run migrations > migration_status
       - run:
           name: Send migration results to memstash
           working_directory: ./backend
           command: |
+            cd backend
             if grep -q "has been executed successfully" migration_status
             then
               echo "DB migration was successful, will update memstash..."
-              curl https://kvdb.io/4nRJwGPtfeUe8g4LRvwcTR/"DB_MIGRATION_\$\{CIRCLE_WORKFLOW_ID:0:7\}" -d 'success' 
+              curl https://kvdb.io/4nRJwGPtfeUe8g4LRvwcTR/"DB_MIGRATION_${CIRCLE_WORKFLOW_ID:0:7}" -d 'success' 
             else
               echo "DB migration failed, please verify setup! Probably the database already exists. Verify setup!"
-              curl https://kvdb.io/4nRJwGPtfeUe8g4LRvwcTR/"DB_MIGRATION_\$\{CIRCLE_WORKFLOW_ID:0:7\}" -d 'failure'
+              curl https://kvdb.io/4nRJwGPtfeUe8g4LRvwcTR/"DB_MIGRATION_${CIRCLE_WORKFLOW_ID:0:7}" -d 'failure'
             fi
             echo "WorkflowID=${CIRCLE_WORKFLOW_ID:0:7}"
       - destroy_environment:
