@@ -1,17 +1,21 @@
-- name: Copy files from backend
-  become: true
-  copy:
-    src: /home/backend.tar.gz
-    dest: /home/ubuntu/backend.tar.gz
+---
+- name: "Create backend directory"
+  file:
+    path: /home/ubuntu/backend
+    state: directory
 
-- name: Start PM2
+- name: Push and extract artifact
+  unarchive:
+    src: ~/project/artifact.tar.gz
+    dest: /home/ubuntu/backend
+- name: "change directory to backend directory"
   shell: |
-    cd /home/ubuntu/
-    tar xzvf backend.tar.gz
-    mv home/circleci/project/backend .
-    cd backend
-    sudo npm install -g npm@latest
-    sudo npm install -g webpack-dev-server
-    sudo npm install
-    sudo npm run build
-    sudo pm2 start npm --name backend -- start
+    cd /home/ubuntu/backend
+    npm install
+    npm audit fix 
+    pm2 stop default
+    pm2 start npm -- start
+    cd dist
+    pm2 start main.js --update-env
+# - name: "Start the backend app"
+#   script: start_app.sh        
