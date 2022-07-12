@@ -3,7 +3,7 @@
   copy:
     src: /home/backend.tar.gz
     dest: /home/ubuntu/backend.tar.gz
-    
+
 - name: Start PM2
   shell: |
     cd /home/ubuntu/
@@ -15,4 +15,3 @@
     sudo npm install
     sudo npm run build
     sudo pm2 start npm --name backend -- start
-
