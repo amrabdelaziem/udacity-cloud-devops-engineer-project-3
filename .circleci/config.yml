@@ -288,6 +288,7 @@ jobs:
             npm install
             npm audit fix --audit-level=critical --force
             npm run migrations > migrations_dump.txt
+            cat migrations_dump.txt
 
       - run:
           name: Save Migration result to ENV variable
