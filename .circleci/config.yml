@@ -318,7 +318,7 @@ jobs:
 
   deploy-frontend:
     docker:
-      - image: python:3.10.5-alpine3.16
+      - image: python:3.7-alpine3.11
     steps:
       - checkout
       - attach_workspace:
@@ -361,7 +361,7 @@ jobs:
 
   deploy-backend:
     docker:
-      - image: python:3.10.5-alpine3.16
+      - image: python:3.7-alpine3.11
     steps:
       - checkout
       - add_ssh_keys:
@@ -539,11 +539,11 @@ jobs:
               aws cloudformation delete-stack --stack-name "udapeople-backend-${OldWorkflowID}"
               aws cloudformation delete-stack --stack-name "udapeople-frontend-${OldWorkflowID}"
             fi
-      # - destroy-environment:
-      #     workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
+      - destroy-environment:
+          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
   
-      # - revert-migrations: 
-      #     workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"                
+      - revert-migrations: 
+          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"                
     
                   
 workflows:
@@ -611,19 +611,19 @@ workflows:
           filters:
             branches:
               only: [master]           
-      # - smoke-test:
-      #     requires: [deploy-backend, deploy-frontend]
-      #     filters:
-      #       branches:
-      #         only: [master]           
-      # - cloudfront-update:
-      #     requires: [smoke-test]
-      #     filters:
-      #       branches:
-      #         only: [master]           
-      # - cleanup:
-      #     requires: [cloudfront-update]          
-      #     filters:
-      #       branches:
-      #         only: [master]           
+      - smoke-test:
+          requires: [deploy-backend, deploy-frontend]
+          filters:
+            branches:
+              only: [master]           
+      - cloudfront-update:
+          requires: [smoke-test]
+          filters:
+            branches:
+              only: [master]           
+      - cleanup:
+          requires: [cloudfront-update]          
+          filters:
+            branches:
+              only: [master]           
 
