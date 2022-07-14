@@ -407,12 +407,12 @@ jobs:
             ansible-playbook -i inventory.txt deploy-backend.yml
             ansible-playbook -i inventory.txt prometheus-node-exporter.yml
         
-      - destroy-environment:
-          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
+      # - destroy-environment:
+      #     workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
   
-      - revert-migrations: 
-          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"   
-          current_value: $(cat backend/migration_status.txt)          
+      # - revert-migrations: 
+      #     workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"   
+      #     current_value: $(cat backend/migration_status.txt)          
 
   smoke-test:
     docker:
