@@ -391,9 +391,9 @@ jobs:
             echo TYPEORM_PASSWORD=$TYPEORM_PASSWORD >> "backend/.env"
             echo TYPEORM_DATABASE=$TYPEORM_DATABASE >> "backend/.env"
             cd backend
-            sudo npm cache clean -f
-            sudo npm install -g n install n
-            sudo n stable upgrade
+            npm cache clean -f
+            npm install -g n install n
+            n stable upgrade
             npm i
             npm run build
             cp package* ./dist
