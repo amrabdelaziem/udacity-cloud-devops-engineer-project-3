@@ -393,8 +393,6 @@ jobs:
             cd backend
             npm cache clean -f
             npm install -g n install n
-            n stable upgrade
-            npm i
             npm run build
             cp package* ./dist
             cd ..
