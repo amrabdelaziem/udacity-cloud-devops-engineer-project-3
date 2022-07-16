@@ -11,10 +11,10 @@
   become: yes
   apt: 
     autoremove: yes
-# - name: "Add nvm script to target"
-#   copy:
-#     src: install_nvm.sh
-#     dest: /home/ubuntu/
+- name: "Add nvm script to target"
+  copy:
+    src: install_nvm.sh
+    dest: /home/ubuntu/
 - name: "install nvm and npm"
   become: yes
   script: install_nvm.sh
