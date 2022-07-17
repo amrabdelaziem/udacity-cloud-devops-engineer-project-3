@@ -267,7 +267,7 @@ jobs:
 
   run-migrations:
     docker:
-      - image: circleci/node:14.18.2
+      - image: circleci/node:13.8.0
     steps:
       - checkout
       - attach_workspace:
@@ -284,12 +284,13 @@ jobs:
          name: Run migrations
          working_directory: ./backend
          command: |
-          sudo npm install
+          rm -rf node_modules/
+          sudo npm cache clean -f
+          npm install
           npm audit fix --audit-level=critical --force
-          # npm cache clean -f
-          # npm install -g n install n
+          # sudo npm install -g n install n
           # sudo n stable upgrade
-          sudo npm run migrations > migration.log
+          npm run migrations > migration.log
           cat migration.log
           migration_succesful=$(cat migration.log | grep -c "has been executed successfully")
           if [ $migration_succesful > 0 ]; then exit 0; else exit 1; fi;
