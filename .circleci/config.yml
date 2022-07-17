@@ -286,7 +286,7 @@ jobs:
          command: |
           rm -rf node_modules/
           sudo npm cache clean -f
-          sudo n stable upgrade
+          sudo npm stable upgrade
           sudo npm install -g n install n
           npm audit fix --audit-level=critical --force
           npm run migrations > migration.log
