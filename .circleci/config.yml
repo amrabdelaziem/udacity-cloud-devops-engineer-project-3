@@ -287,6 +287,7 @@ jobs:
           npm audit fix --audit-level=critical --force
           sudo npm cache clean -f
           sudo npm install -g n install n
+          sudo n stable upgrade
           sudo npm run migrations > migration.log
           cat migration.log
           migration_succesful=$(cat migration.log | grep -c "has been executed successfully")
