@@ -266,7 +266,8 @@ jobs:
 
 
   run-migrations:
-    executor: node
+    docker:
+      - image: circleci/node:14.18.2
     steps:
       - checkout
       - attach_workspace:
@@ -285,8 +286,8 @@ jobs:
          command: |
           sudo npm install
           npm audit fix --audit-level=critical --force
-          npm cache clean -f
-          npm install -g n install n
+          # npm cache clean -f
+          # npm install -g n install n
           # sudo n stable upgrade
           sudo npm run migrations > migration.log
           cat migration.log
