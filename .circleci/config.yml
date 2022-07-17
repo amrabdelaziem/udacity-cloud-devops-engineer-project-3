@@ -256,7 +256,7 @@ jobs:
             pwd &&
             ls -la
             cat inventory
-            ansible-playbook -i inventory -e 'ansible_python_interpreter=/usr/bin/python3' configure-server.yml
+            ansible-playbook -i inventory -e 'ansible_python_interpreter=/usr/bin/python3' configure-server.yaml
       - destroy_environment:
           id: ${CIRCLE_WORKFLOW_ID:0:7}
           when: on_fail
@@ -363,7 +363,7 @@ jobs:
           working_directory: ./.circleci/ansible
           command: |
             cat inventory
-            ansible-playbook -i inventory deploy-server.yml -vv
+            ansible-playbook -i inventory deploy-server.yaml -vv
       - destroy_environment:
           id: ${CIRCLE_WORKFLOW_ID:0:7}
           when: on_fail
