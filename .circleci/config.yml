@@ -434,12 +434,12 @@ jobs:
             echo $SUCCESS
             export API_URL="http://${BACKEND_IP}:3030"
             echo "${API_URL}"
-            OldWorkflowID=$(aws cloudformation \
-            list-exports --query "Exports[?Name==\`WorkflowID\`].Value" \
-            --no-paginate --output text)
-            echo 'export OldWorkflowID: "${OldWorkflowID}"' >> $BASH_ENV 
-            echo ${OldWorkflowID} >> .circleci/ansible/workflowid.txt
-            cat .circleci/ansible/workflowid.txt
+            # OldWorkflowID=$(aws cloudformation \
+            # list-exports --query "Exports[?Name==\`WorkflowID\`].Value" \
+            # --no-paginate --output text)
+            # echo 'export OldWorkflowID: "${OldWorkflowID}"' >> $BASH_ENV 
+            # echo ${OldWorkflowID} >> .circleci/ansible/workflowid.txt
+            # cat .circleci/ansible/workflowid.txt
             if curl "${API_URL}/api/status" | grep "ok"
             then
                 return 0
@@ -482,10 +482,11 @@ jobs:
           name: Update cloudfront distribution
           command: |
             export OldWorkflowID=$(aws cloudformation \
-                    list-exports --query "Exports[?Name==\`WorkflowID\`].Value" \
+                    list-exports --query "Exports[?Name=='WorkflowID'].Value" \
                     --no-paginate --output text)
-            echo "OldWorkflowID: "${OldWorkflowID}"" >> $BASH_ENV 
-            echo "OldWorkflowID: ${OldWorkflowID}"                    
+            echo 'export OldWorkflowID=${OldWorkflowID}' >> $BASH_ENV 
+            echo "OldWorkflowID: ${OldWorkflowID}"  
+            echo "${CIRCLE_WORKFLOW_ID:0:7}"  >> .circleci/ansible/workflowid.txt        
             # Change the initial stack name, as applicable to you
             aws cloudformation deploy \
             --template-file .circleci/files/cloudfront.yml \
