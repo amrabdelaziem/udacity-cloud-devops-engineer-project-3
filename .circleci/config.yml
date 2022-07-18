@@ -434,6 +434,12 @@ jobs:
             echo $SUCCESS
             export API_URL="http://${BACKEND_IP}:3030"
             echo "${API_URL}"
+            OldWorkflowID=$(aws cloudformation \
+            list-exports --query "Exports[?Name==\`WorkflowID\`].Value" \
+            --no-paginate --output text)
+            echo 'export OldWorkflowID: "${OldWorkflowID}"' >> $BASH_ENV 
+            echo ${OldWorkflowID} >> .circleci/ansible/workflowid.txt
+            cat .circleci/ansible/workflowid.txt
             if curl "${API_URL}/api/status" | grep "ok"
             then
                 return 0
@@ -467,71 +473,38 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            apk add --update  tar gzip curl
+            apk add --update  tar gzip 
             apk add --update nodejs npm     
             pip3 install awscli
-      # - attach_workspace:
-      #     at: ~/            
-      # - run:
-      #     name: Update cloudfront distribution
-      #     command: |
-      #       OldWorkflowID=$(aws cloudformation \
-      #               list-exports --query "Exports[?Name==\`WorkflowID\`].Value" \
-      #               --no-paginate --output text)
-      #       export OldWorkflowID
-      #       curl https://kvdb.io/4nRJwGPtfeUe8g4LRvwcTR/WorkflowID -d "$OldWorkflowID"
-      #       curl https://kvdb.io/4nRJwGPtfeUe8g4LRvwcTR/WorkflowID
-      #       curl https://kvdb.io/4nRJwGPtfeUe8g4LRvwcTR/WorkflowID >> .circleci/ansible/workflowid.txt
-      #       echo OldWorkflowID: "${OldWorkflowID}" >> $BASH_ENV 
-      #       echo "------------------------"
-      #       echo ${OldWorkflowID}            
-      #       echo ${OldWorkflowID} >> .circleci/ansible/workflowid.txt
-      #       echo "cat--------------"
-      #       cat  .circleci/ansible/workflowid.txt
-      #       echo "----------------------------"
-      #       # Change the initial stack name, as applicable to you
-      #       aws cloudformation deploy \
-      #       --template-file .circleci/files/cloudfront.yml \
-      #       --stack-name "InitialStack" \
-      #       --parameter-overrides WorkflowID="${CIRCLE_WORKFLOW_ID:0:7}" \
-      #       --tags project=udapeople
-      #       cat .circleci/ansible/workflowid.txt
-      #       echo Current workflow id: "${CIRCLE_WORKFLOW_ID:0:7}"
-      # - persist_to_workspace:
-      #     root: ~/
-      #     paths:
-      #       - project/.circleci/ansible/workflowid.txt     
-      - run:
-          name: Store old WorkflowID in Kvdb for cleanup phase
-          working_directory: ./.circleci/ansible
-          command: |
-            OldWorkflowID=$(aws cloudformation \
-              list-exports --query "Exports[?Name==\`WorkflowID\`].Value" \
-              --no-paginate --output text)
-            aws cloudformation \
-            list-exports --query "Exports[?Name==\`WorkflowID\`].Value" \
-            --no-paginate --output text > workflowid.txt
-            OldWorkflowID=$(cat workflowid.txt)
-            echo "OldWorkflowID=$OldWorkflowID"
-            curl https://kvdb.io/4nRJwGPtfeUe8g4LRvwcTR/WorkflowID -d "$OldWorkflowID"
-            # echo ${OldWorkflowID} > workflowid.txt
+      - attach_workspace:
+          at: ~/            
       - run:
           name: Update cloudfront distribution
-          working_directory: ./.circleci/files
           command: |
+            export OldWorkflowID=$(aws cloudformation \
+                    list-exports --query "Exports[?Name==\`WorkflowID\`].Value" \
+                    --no-paginate --output text)
+            echo "OldWorkflowID: "${OldWorkflowID}"" >> $BASH_ENV 
+            echo "OldWorkflowID: ${OldWorkflowID}"                    
+            # Change the initial stack name, as applicable to you
             aws cloudformation deploy \
-              --template-file cloudfront.yml \
-              --stack-name udapeople-cloudfront-production \
-              --parameter-overrides WorkflowID="${CIRCLE_WORKFLOW_ID:0:7}" \
-              --tags project=udapeople
-
+            --template-file .circleci/files/cloudfront.yml \
+            --stack-name "InitialStack" \
+            --parameter-overrides WorkflowID="${CIRCLE_WORKFLOW_ID:0:7}" \
+            --tags project=udapeople
+            
+            echo ${OldWorkflowID} >> .circleci/ansible/workflowid.txt
+            echo Current workflow id: "${CIRCLE_WORKFLOW_ID:0:7}"
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - project/.circleci/ansible/workflowid.txt            
       - destroy-environment:
           workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
   
       - revert-migrations: 
           workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
           current_value: $(cat backend/migration_status.txt)          
-
 
   cleanup:
     docker:
@@ -541,56 +514,40 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            apk add --update  tar gzip curl
+            apk add --update  tar gzip 
             apk add --update nodejs npm     
             pip3 install awscli
-      # - get-backend-url   
-      # - attach_workspace:
-      #     at: ~/               
-      # - run:
-      #     name: Get old stack workflow id
-      #     command: |
-      #       source $BASH_ENV
-      #       # export STACKS=($(aws cloudformation list-stacks --query "StackSummaries[*].StackName" --stack-status-filter CREATE_COMPLETE --no-paginate --output text))
-      #       # echo 'STACKS: "${STACKS[@]}"' >> BASH_ENV
-      #       export OldWorkflowID="${OldWorkflowID}"
-      #       echo "-------------------------------------"
-      #       echo ${OldWorkflowID}
-      #       cat .circleci/ansible/workflowid.txt
-      #       curl https://kvdb.io/4nRJwGPtfeUe8g4LRvwcTR/WorkflowID
-      #       # export STACKS=[${STACKS[@]}] #put the list of stacks here
+      - get-backend-url   
+      - attach_workspace:
+          at: ~/               
+      - run:
+          name: Get old stack workflow id
+          command: |
+            source $BASH_ENV
+            # export STACKS=($(aws cloudformation list-stacks --query "StackSummaries[*].StackName" --stack-status-filter CREATE_COMPLETE --no-paginate --output text))
+            # echo 'STACKS: "${STACKS[@]}"' >> BASH_ENV
+            export OldWorkflowID="${OldWorkflowID}"
+            echo ${OldWorkflowID}
+            cat .circleci/ansible/workflowid.txt
+            # export STACKS=[${STACKS[@]}] #put the list of stacks here
             
       - run:
           name: Remove old stacks and files
-          working_directory: ./.circleci/ansible
           command: |
-            # source $BASH_ENV
-            # export OldWorkflowID=$(cat .circleci/ansible/workflowid.txt)
-            # echo ${CIRCLE_WORKFLOW_ID:0:7}
-            # cat .circleci/ansible/workflowid.txt
-            # echo "------------------------"
-            OldWorkflowID=$(cat workflowid.txt)
-            echo "OldWorkflowID=$OldWorkflowID"
-            OldWorkflowID=$(curl https://kvdb.io/4nRJwGPtfeUe8g4LRvwcTR/WorkflowID)
-            echo "OldWorkflowID=$OldWorkflowID"
-            CurrentWorkflowID=${CIRCLE_WORKFLOW_ID:0:7}
-            echo "CurrentWorkflowID=$CurrentWorkflowID"
-            # echo $OldWorkflowID
-            # curl https://kvdb.io/4nRJwGPtfeUe8g4LRvwcTR/WorkflowID
-            # echo "------------------------"
+            source $BASH_ENV
+            export OldWorkflowID=$(cat .circleci/ansible/workflowid.txt)
+            echo ${CIRCLE_WORKFLOW_ID:0:7}
             if [[ "${CIRCLE_WORKFLOW_ID:0:7}" != "${OldWorkflowID}" ]]
             then
               aws s3 rm "s3://udapeople-${OldWorkflowID}" --recursive
               aws cloudformation delete-stack --stack-name "udapeople-backend-${OldWorkflowID}"
               aws cloudformation delete-stack --stack-name "udapeople-frontend-${OldWorkflowID}"
-            else
-              echo "$OldWorkflowID==$CurrentWorkflowID => nothing needs to be done..."
             fi
       # - destroy-environment:
       #     workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
   
       # - revert-migrations: 
-      #     workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"                
+      #     workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"    
     
                   
 workflows:
