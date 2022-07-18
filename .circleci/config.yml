@@ -467,7 +467,7 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            apk add --update  tar gzip 
+            apk add --update  tar gzip curl
             apk add --update nodejs npm     
             pip3 install awscli
       - attach_workspace:
@@ -504,13 +504,13 @@ jobs:
 
   cleanup:
     docker:
-      - image: python:3.7-alpine3.11
+      - image: python:3.10.5-alpine3.16
     steps:
       - checkout
       - run:
           name: Install dependencies
           command: |
-            apk add --update  tar gzip 
+            apk add --update  tar gzip curl
             apk add --update nodejs npm     
             pip3 install awscli
       - get-backend-url   
