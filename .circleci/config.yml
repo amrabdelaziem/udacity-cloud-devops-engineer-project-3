@@ -475,9 +475,10 @@ jobs:
       - run:
           name: Update cloudfront distribution
           command: |
-            export OldWorkflowID=$(aws cloudformation \
+            OldWorkflowID=$(aws cloudformation \
                     list-exports --query "Exports[?Name==\`WorkflowID\`].Value" \
                     --no-paginate --output text)
+            export OldWorkflowID
             curl https://kvdb.io/4nRJwGPtfeUe8g4LRvwcTR/WorkflowID -d "$OldWorkflowID"
             curl https://kvdb.io/4nRJwGPtfeUe8g4LRvwcTR/WorkflowID
             curl https://kvdb.io/4nRJwGPtfeUe8g4LRvwcTR/WorkflowID >> .circleci/ansible/workflowid.txt
