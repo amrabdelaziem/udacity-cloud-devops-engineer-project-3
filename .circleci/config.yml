@@ -479,16 +479,22 @@ jobs:
                     list-exports --query "Exports[?Name==\`WorkflowID\`].Value" \
                     --no-paginate --output text)
             curl https://kvdb.io/4nRJwGPtfeUe8g4LRvwcTR/WorkflowID -d "$OldWorkflowID"
+            curl https://kvdb.io/4nRJwGPtfeUe8g4LRvwcTR/WorkflowID
+            curl https://kvdb.io/4nRJwGPtfeUe8g4LRvwcTR/WorkflowID >> .circleci/ansible/workflowid.txt
             echo OldWorkflowID: "${OldWorkflowID}" >> $BASH_ENV 
-            echo ${OldWorkflowID}                    
+            echo "------------------------"
+            echo ${OldWorkflowID}            
+            echo ${OldWorkflowID} >> .circleci/ansible/workflowid.txt
+            echo "cat--------------"
+            cat  .circleci/ansible/workflowid.txt
+            echo "----------------------------"
             # Change the initial stack name, as applicable to you
             aws cloudformation deploy \
             --template-file .circleci/files/cloudfront.yml \
             --stack-name "InitialStack" \
             --parameter-overrides WorkflowID="${CIRCLE_WORKFLOW_ID:0:7}" \
             --tags project=udapeople
-            
-            echo ${OldWorkflowID} >> .circleci/ansible/workflowid.txt
+            cat .circleci/ansible/workflowid.txt
             echo Current workflow id: "${CIRCLE_WORKFLOW_ID:0:7}"
       - persist_to_workspace:
           root: ~/
@@ -519,12 +525,14 @@ jobs:
       - run:
           name: Get old stack workflow id
           command: |
-            source $BASH_ENV
+            #source $BASH_ENV
             # export STACKS=($(aws cloudformation list-stacks --query "StackSummaries[*].StackName" --stack-status-filter CREATE_COMPLETE --no-paginate --output text))
             # echo 'STACKS: "${STACKS[@]}"' >> BASH_ENV
             export OldWorkflowID="${OldWorkflowID}"
+            echo "-------------------------------------"
             echo ${OldWorkflowID}
             cat .circleci/ansible/workflowid.txt
+            curl https://kvdb.io/4nRJwGPtfeUe8g4LRvwcTR/WorkflowID
             # export STACKS=[${STACKS[@]}] #put the list of stacks here
             
       - run:
@@ -537,6 +545,7 @@ jobs:
             echo "------------------------"
             # OldWorkflowID=$(curl https://kvdb.io/4nRJwGPtfeUe8g4LRvwcTR/WorkflowID)
             echo $OldWorkflowID
+            curl https://kvdb.io/4nRJwGPtfeUe8g4LRvwcTR/WorkflowID
             echo "------------------------"
             if [[ "${CIRCLE_WORKFLOW_ID:0:7}" != "${OldWorkflowID}" ]]
             then
