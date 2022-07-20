@@ -219,7 +219,7 @@ jobs:
   
   configure-infrastructure:
     docker:
-      - image: python:3.10.5-alpine3.16
+      - image: python:3.7-alpine3.11
     steps:
       - checkout
       - add_ssh_keys:
@@ -246,7 +246,7 @@ jobs:
 
   configure-node-and-npm:
     docker:
-      - image: python:3.10.5-alpine3.16
+      - image: python:3.7-alpine3.11
     steps:
       - checkout
       - add_ssh_keys:
@@ -308,7 +308,7 @@ jobs:
           current_value: $(cat backend/migration_status.txt)
   deploy-frontend:
     docker:
-      - image: python:3.10.5-alpine3.16
+      - image: python:3.7-alpine3.11
     steps:
       - checkout
       - attach_workspace:
@@ -351,7 +351,7 @@ jobs:
 
   deploy-backend:
     docker:
-      - image: python:3.10.5-alpine3.16
+      - image: python:3.7-alpine3.11
     steps:
       - checkout
       - add_ssh_keys:
@@ -405,7 +405,7 @@ jobs:
 
   smoke-test:
     docker:
-      - image: python:3.10.5-alpine3.16
+      - image: alpine:latest
     steps:
       - checkout
       - run:
@@ -472,16 +472,16 @@ jobs:
           name: Update cloudfront distribution
           command: |
             export OldWorkflowID=$(aws cloudformation \
-                    list-exports --query "Exports[?Name=='WorkflowID'].Value" \
+                    list-exports --query "Exports[?Name==\`WorkflowID\`].Value" \
                     --no-paginate --output text)
             echo 'export OldWorkflowID=${OldWorkflowID}' >> $BASH_ENV 
             echo "OldWorkflowID: ${OldWorkflowID}"  
-            # echo "${CIRCLE_WORKFLOW_ID:0:7}"  >> .circleci/ansible/workflowid.txt        
+            echo "${CIRCLE_WORKFLOW_ID:0:7}"  >> .circleci/ansible/workflowid.txt        
             # Change the initial stack name, as applicable to you
             aws cloudformation deploy \
             --template-file .circleci/files/cloudfront.yml \
             --stack-name "InitialStack" \
-            --parameter-overrides WorkflowID="udapeople-amrradwan202207" \
+            --parameter-overrides WorkflowID="${CIRCLE_WORKFLOW_ID:0:7}" \
             --tags project=udapeople
             
             echo ${OldWorkflowID} >> .circleci/ansible/workflowid.txt
