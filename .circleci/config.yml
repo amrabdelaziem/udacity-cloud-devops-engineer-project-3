@@ -279,6 +279,7 @@ jobs:
           name: Install dependencies
           command: |
             sudo apt-get update && sudo apt-get install -yy less
+            # sudo apt-get install npm -y
             curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
             unzip awscliv2.zip
             sudo ./aws/install
@@ -289,8 +290,8 @@ jobs:
           name: Run migrations
           command: |
             cd backend
-            npm install
-            npm audit fix --audit-level=critical --force
+            # npm install
+            #npm audit fix --audit-level=critical --force
             sudo npm cache clean -f
             sudo npm install -g n install n
             sudo n stable upgrade
