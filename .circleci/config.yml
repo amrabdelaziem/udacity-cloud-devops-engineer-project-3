@@ -246,7 +246,7 @@ jobs:
 
   configure-node-and-npm:
     docker:
-      - image: python:3.7-alpine3.11
+      - image: python:3.10.5-alpine3.16
     steps:
       - checkout
       - add_ssh_keys:
@@ -310,7 +310,7 @@ jobs:
 
   deploy-frontend:
     docker:
-      - image: python:3.7-alpine3.11
+      - image: python:3.10.5-alpine3.16
     steps:
       - checkout
       - attach_workspace:
